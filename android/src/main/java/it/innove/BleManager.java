@@ -140,9 +140,8 @@ class BleManager extends ReactContextBaseJavaModule implements ActivityEventList
 			callback.invoke("No bluetooth support");
 			return;
 		}
-		if (!getBluetoothAdapter().isEnabled()) {
+		if (!getBluetoothAdapter().isEnabled())
 			return;
-		}
 
 		for (Iterator<Map.Entry<String, Peripheral>> iterator = peripherals.entrySet().iterator(); iterator.hasNext(); ) {
 			Map.Entry<String, Peripheral> entry = iterator.next();
@@ -198,13 +197,13 @@ class BleManager extends ReactContextBaseJavaModule implements ActivityEventList
 	private void removeBond(String peripheralUUID, Callback callback) {
 		Log.d(LOG_TAG, "Remove bond to: " + peripheralUUID);
 
-		// Set<BluetoothDevice> deviceSet = getBluetoothAdapter().getBondedDevices();
-		// for (BluetoothDevice device : deviceSet) {
-		// 	if (peripheralUUID.equalsIgnoreCase(device.getAddress())) {
-		// 		callback.invoke();
-		// 		return;
-		// 	}
-		// }
+		Set<BluetoothDevice> deviceSet = getBluetoothAdapter().getBondedDevices();
+		for (BluetoothDevice device : deviceSet) {
+			if (peripheralUUID.equalsIgnoreCase(device.getAddress())) {
+				callback.invoke();
+				return;
+			}
+		}
 
 		Peripheral peripheral = retrieveOrCreatePeripheral(peripheralUUID);
 		if (peripheral == null) {
@@ -510,25 +509,13 @@ class BleManager extends ReactContextBaseJavaModule implements ActivityEventList
 	}
 
 	@ReactMethod
-	public void requestConnectionPriority(String deviceUUID, int connectionPriority, Callback callback) {
-		Log.d(LOG_TAG, "Request connection priority of " + connectionPriority + " from: " + deviceUUID);
-		Peripheral peripheral = peripherals.get(deviceUUID);
-		if (peripheral != null) {
-			peripheral.requestConnectionPriority(connectionPriority, callback);
-		} else {
-			callback.invoke("Peripheral not found", null);
-		}
-	}
-
-	@ReactMethod
 	public void requestMTU(String deviceUUID, int mtu, Callback callback) {
 		Log.d(LOG_TAG, "Request MTU of " + mtu + " bytes from: " + deviceUUID);
 		Peripheral peripheral = peripherals.get(deviceUUID);
 		if (peripheral != null) {
 			peripheral.requestMTU(mtu, callback);
-		} else {
+		} else
 			callback.invoke("Peripheral not found", null);
-		}
 	}
 
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
